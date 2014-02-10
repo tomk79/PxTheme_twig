@@ -1,0 +1,30 @@
+<?php
+	ob_start();
+?>
+{% set page_info = px.site().get_current_page_info() %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ page_info.title|e }}</title>
+{{ px.theme().pull_content('head')|raw }}
+</head>
+<body>
+
+<h1>{{ page_info.title_h1|raw }}</h1>
+<div id="content" class="contents">
+{{ px.theme().pull_content()|raw }}
+</div>
+
+</body>
+</html>
+<?php
+	//↓コンテンツから受け取った
+	//	コンテンツエリアのソースを出力しています。
+	// print $px->theme()->pull_content();
+
+	// Twigをロード
+	require_once( $px->realpath_theme_files('libs/twig/lib/Twig/Autoloader.php') );
+	Twig_Autoloader::register();
+	$twig = new Twig_Environment( new Twig_Loader_String() );
+	print $twig->render( ob_get_clean(), array('px' => $px) );
+?>
