@@ -1,30 +1,103 @@
-<?php
-	ob_start();
-?>
+<?php ob_start(); ?>
 {% set page_info = px.site().get_current_page_info() %}
 <!DOCTYPE html>
 <html>
-<head>
-<title>{{ page_info.title|e }}</title>
-{{ px.theme().pull_content('head')|raw }}
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<title>{{ page_info.title|e }} | {{ px.get_conf('project.name') }}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="keywords" content="{{ page_info.keywords|e }}" />
+		<meta name="description" content="{{ page_info.description|e }}" />
+		<link rel="stylesheet" href="{{ px.theme().href('/common/css/modules.css') }}" type="text/css" />
+		<link rel="stylesheet" href="{{ px.path_theme_files('/css/common.css') }}" type="text/css" />
+		<script src="{{ px.theme().href('/common/js/jquery-1.10.1.min.js') }}" type="text/javascript"></script>
+		{{ px.theme().pull_content('head')|raw }}
+	</head>
+	<body id="page_top">
 
-<h1>{{ page_info.title_h1|raw }}</h1>
-<div id="content" class="contents">
+
+
+		<div class="theme_outline">
+			<div class="theme_header">
+				<div class="logo"><a href="{{ px.theme().href('') }}">{{ px.get_conf('project.name') }}</a></div>
+				<div class="breadcrumb">{{ mytheme.mk_breadcrumb()|raw }}</div>
+			</div><!-- /.theme_header -->
+			<div class="theme_middle">
+				<div class="theme_contcol">
+					<h1>{{ t.text2html( page_info.title_h1 )|raw }}</h1>
+					<div id="content" class="contents">
+
+{#
+↓コンテンツから受け取った
+  コンテンツエリアのソースを出力しています。
+#}
 {{ px.theme().pull_content()|raw }}
-</div>
 
-</body>
+					</div><!-- /#content -->
+
+				</div><!-- /.theme_contcol -->
+				<div class="theme_navibar">
+					<div class="theme_localnavi">
+						{% set local_bros_page_info = mytheme.get_gnavi_category_list() %}
+						{% if local_bros_page_info|length %}
+							<ul>
+							{% for local_page_id in local_bros_page_info %}
+								{% set local_page_info = px.site().get_page_info(local_page_id) %}
+								<li>{{ px.theme().mk_link(local_page_info.path)|raw }}
+									{% if px.site().is_page_in_breadcrumb( local_page_info.id ) %}
+										{{ mytheme.mk_html_gnavi( local_page_info.id, 1 )|raw }}
+									{% endif %}
+								</li>
+							{% endfor %}
+							</ul>
+						{% endif %}
+					</div><!-- /.theme_localnavi -->
+				</div><!-- /.theme_navibar -->
+			</div><!-- /.theme_middle -->
+			<div class="theme_back_to_page_top"><a href="#page_top" class="up">ページの先頭へ戻る</a></div>
+		</div><!-- /.theme_outline -->
+
+
+		{% set gnavi_category_list = mytheme.get_gnavi_category_list() %}
+		{% if gnavi_category_list|length %}
+			<div class="theme_megafooter"><div class="theme_megafooter-outline"><div class="theme_megafooter-inner">
+			{% for row_page_id in gnavi_category_list %}
+				<div class="theme_megafooter-cell"><div class="theme_megafooter-pad">
+				<p>{{ px.theme().mk_link(row_page_id)|raw }}</p>
+				{% set children = px.site().get_children(row_page_id) %}
+				{% if children|length %}
+				<ul>
+				{% for child in children %}
+					{% set child_page_info = px.site().get_page_info( child ) %}
+					<li>{{ px.theme().mk_link(child_page_info.path)|raw }}</li>
+				{% endfor %}
+				</ul>
+				{% endif %}
+				</div></div>
+			{% endfor %}
+			</div></div></div><!-- /.theme_megafooter -->
+		{% endif %}
+
+
+		<div class="theme_footer"><div class="theme_footer-inner">
+			{% set shouldernavi_list = mytheme.get_shouldernavi_list() %}
+			{% if shouldernavi_list|length %}
+			<div class="theme_footer_shouldernavi">
+				<ul>
+					{% for row_page_id in shouldernavi_list %}
+						<li>{{ px.theme().mk_link( row_page_id, {'class':'icon'} )|raw }}</li>
+					{% endfor %}
+				</ul>
+			</div><!-- /.theme_footer_shouldernavi -->
+			{% endif %}
+			<div class="breadcrumb">{{ mytheme.mk_breadcrumb()|raw }}</div>
+			<div class="theme_footer-copyright">(C){{ px.theme().mk_link('/', px.get_conf('project.name') )|raw }}.</div>
+		</div></div><!-- /.theme_footer -->
+
+	</body>
 </html>
 <?php
-	//↓コンテンツから受け取った
-	//	コンテンツエリアのソースを出力しています。
-	// print $px->theme()->pull_content();
-
-	// Twigをロード
-	require_once( $px->realpath_theme_files('libs/twig/lib/Twig/Autoloader.php') );
-	Twig_Autoloader::register();
-	$twig = new Twig_Environment( new Twig_Loader_String() );
-	print $twig->render( ob_get_clean(), array('px' => $px) );
+	$tmp_class_name = $px->load_pxtheme_class('/custom/funcs.php');
+	$mytheme = new $tmp_class_name($this->px);
+	print $mytheme->render( ob_get_clean() );
 ?>
