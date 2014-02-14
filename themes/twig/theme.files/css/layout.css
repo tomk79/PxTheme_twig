@@ -27,13 +27,31 @@ body{
 }
 
 /**
+ * レイアウトの出し分け
+ */
+.theme_rp_l{
+	display:block;
+}
+.theme_rp_s{
+	display:none;
+}
+@media all and (max-width: <?php print t::h($scheme['layout.break_point']); ?>px){
+	.theme_rp_l{
+		display:none;
+	}
+	.theme_rp_s{
+		display:block;
+	}
+}
+
+/**
  * ヘッダー
  */
 .theme_header{
 	padding:0;
 	margin-bottom:5px;
-	float:right;
-	width:22%;
+	float:none;
+	width:auto;
 }
 .theme_header .logo{
 	font-size:150%;
@@ -43,17 +61,57 @@ body{
 .theme_header .logo a{
 	text-decoration:none;
 	font-size:inherit;
-	display:block;
 	margin:1em 0 0.2em 0;
 }
+.theme_gnavi{
+	background:#eee;
+}
+.theme_gnavi ul ,
+.theme_gnavi ul li{
+	margin:0; padding:0;
+	list-style-type:none;
+}
+.theme_gnavi ul {
+	margin-left:-2px;
+}
+.theme_gnavi ul li{
+	float:left;
+	width:25%;
+	margin-bottom:1px;
+}
+.theme_gnavi ul li a{
+	display:block;
+	padding:10px;
+	margin-left:2px;
+	text-align:center;
+	background:#666;
+	color:#eee;
+	white-space: nowrap;
+	overflow:hidden;
+	box-shadow: 10px 0px 20px 0px rgba(0,0,0,0.2) inset;
+	background: -moz-linear-gradient( top, #666, #999 );
+	font-size:small;
+}
+.theme_gnavi ul li a.current{
+	background:#333;
+	background: -moz-linear-gradient( top, #333, #bbb );
+}
 @media all and (max-width: <?php print t::h($scheme['layout.break_point']); ?>px){
-	.theme_header{
-		float:none;
-		width:auto;
+	.theme_gnavi ul li{
+		width:50%;
 	}
-	.theme_header .logo{
-		font-size:110%;
+	.theme_gnavi ul li a{
+		font-size:x-small;
 	}
+}
+.theme_togglemenu{
+	float:right;
+}
+.theme_togglemenu a{
+	display:inline-block;
+	padding:4px;
+	border:1px solid #000;
+	border-radius:5px;
 }
 
 /**
@@ -93,6 +151,7 @@ body{
  * ローカルナビ
  */
 .theme_localnavi{
+
 	padding:10px 0;
 	text-align:right;
 	font-size:small;
@@ -300,6 +359,7 @@ body{
 		'.theme_megafooter',
 		'.theme_megafooter-inner',
 		'.theme_outline',
+		'.theme_gnavi',
 	);
 	$clearfix_after = array();
 	foreach( $clearfix as $clearfix_key=>$clearfix_row ){
